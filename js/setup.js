@@ -6,6 +6,7 @@
   var userNameInput = document.querySelector('.setup-user-name');
   var userDialog = document.querySelector('.setup');
   var similarListElement = userDialog.querySelector('.setup-similar-list');
+  var form = userDialog.querySelector('.setup-wizard-form');
   var coords = {};
 
   var onPopupEscPress = function (evt) {
@@ -88,6 +89,13 @@
       x: userDialog.style.top,
       y: userDialog.style.left
     };
+
+    form.addEventListener('submit', function (evt) {
+      window.upload(new FormData(form), function (response) {
+        userDialog.classList.add('hidden');
+      });
+      evt.preventDefault();
+    });
   };
 
   var closePopup = function () {
