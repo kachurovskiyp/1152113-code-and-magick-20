@@ -1,44 +1,37 @@
 'use strict';
 
 (function () {
-  var WIZARD_NAMES = ['Иван', 'Хуан Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'];
-  var WIZARD_SURNAMES = ['да Марья', 'Верон', 'Мирабелла', 'Вальц', 'Онопко', 'Топольницкая', 'Нионго', 'Ирвинг'];
-  var COAT_COLORS = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
-  var EYES_COLORS = ['black', 'red', 'blue', 'yellow', 'green'];
-  var wizardsList = [];
-
-  var createWizards = function (playersNumber) {
-    for (var i = 0; i < playersNumber; i++) {
-      wizardsList.push({
-        name: window.random.element(WIZARD_NAMES) + ' ' + window.random.element(WIZARD_SURNAMES),
-        coatColor: window.random.element(COAT_COLORS),
-        eyesColor: window.random.element(EYES_COLORS)
-      });
-    }
-    return wizardsList;
-  };
-
-  var renderWizard = function (wizard) {
-    var similarWizardTemplate = document.querySelector('#similar-wizard-template')
-      .content
-      .querySelector('.setup-similar-item');
-    var wizardElement = similarWizardTemplate.cloneNode(true);
-
-    wizardElement.querySelector('.setup-similar-label').textContent = wizard.name;
-    wizardElement.querySelector('.wizard-coat').style.fill = wizard.coatColor;
-    wizardElement.querySelector('.wizard-eyes').style.fill = wizard.eyesColor;
-
-    return wizardElement;
-  };
+  var userDialog = document.querySelector('.setup');
+  var similarListElement = userDialog.querySelector('.setup-similar-list');
 
   window.getWizards = function (playersNumber) {
-    var wizardList = createWizards(playersNumber);
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < wizardList.length; i++) {
-      fragment.appendChild(renderWizard(wizardList[i]));
+    var onLoad = function (data) {
+      var wizardItems = document.querySelectorAll('.setup-similar-item');
+      for (var i = 0; i < wizardItems.length; i++) {
+        wizardItems[i].querySelector('.setup-similar-label').textContent = data[i].name;
+        wizardItems[i].querySelector('.wizard-coat').style.fill = data[i].colorCoat;
+        wizardItems[i].querySelector('.wizard-eyes').style.fill = data[i].colorEyes;
+      }
+    };
+
+    var onError = function (err) {
+      userDialog = document.querySelector('.setup');
+      var span = document.createElement(span);
+      span.textContent = err;
+      userDialog.appendChild(span);
+    };
+
+    for (var i = 0; i < playersNumber; i++) {
+      var similarWizardTemplate = document.querySelector('#similar-wizard-template')
+        .content
+        .querySelector('.setup-similar-item');
+      var wizardElement = similarWizardTemplate.cloneNode(true);
+      fragment.appendChild(wizardElement);
     }
 
-    return fragment;
+    window.backend.load(onLoad, onError);
+    similarListElement.appendChild(fragment);
   };
 })();

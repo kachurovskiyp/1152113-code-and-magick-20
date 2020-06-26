@@ -5,7 +5,7 @@
   var setupClose = document.querySelector('.setup-close');
   var userNameInput = document.querySelector('.setup-user-name');
   var userDialog = document.querySelector('.setup');
-  var similarListElement = userDialog.querySelector('.setup-similar-list');
+  var form = userDialog.querySelector('.setup-wizard-form');
   var coords = {};
 
   var onPopupEscPress = function (evt) {
@@ -88,6 +88,13 @@
       x: userDialog.style.top,
       y: userDialog.style.left
     };
+
+    form.addEventListener('submit', function (evt) {
+      window.upload(new FormData(form), function () {
+        userDialog.classList.add('hidden');
+      });
+      evt.preventDefault();
+    });
   };
 
   var closePopup = function () {
@@ -110,8 +117,7 @@
     userDialog.style.left = coords.y;
   };
 
-  similarListElement.appendChild(window.getWizards(4));
-
+  window.getWizards(4);
   userDialog.querySelector('.setup-similar').classList.remove('hidden');
 
   setupOpen.addEventListener('click', function () {
